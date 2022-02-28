@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+    stages {
+        stage('Validate') {
+            steps {
+                sh 'echo "Validation"'
+                sh '''
+                    echo "Cloning the code"
+                    git clone https://github.com/jenkins-docs/simple-java-maven-app.git
+					cd simple-java-maven-app
+                    mvn validate
+                '''
+            }
+        }
+		stage('Compile') {
+		    steps {
+			 sh 'echo "Deploying"'
+                sh '''
+                    echo "Compiling code"
+					cd simple-java-maven-app
+					mvn compile
+					'''
+				}
+			}
+				stage('package') {
+		    steps {
+			 sh 'echo "Packaging"'
+                sh '''
+                    echo "Deploy on the target location"
+					cd simple-java-maven-app
+					mvn package
+					'''
+				}
+			}
+		stage('Install') {
+		    steps {
+			 sh 'echo "Installing"'
+                sh '''
+                    echo "Verifying and Installing"
+					cd simple-java-maven-app
+					mvn verify
+					mvn install
+					'''
+				}
+			}	
+		stage('Deploy') {
+		    steps {
+			 sh 'echo "Deploying"'
+                sh '''
+                    echo "Deploying"
+					cd simple-java-maven-app
+					mvn deploy
+					'''
+				}
+			}	
+    }
+}
